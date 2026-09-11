@@ -1,0 +1,105 @@
+movierecommendation/
+│
+├── app.py                # Main Flask app
+├── trainmodel.py         # Script to train and save model
+├── models/
+│   ├── movies.pkl        # Pickled DataFrame of movies
+│   └── similarity.pkl    # Pickled similarity matrix
+├── templates/
+│   └── index.html        # Frontend HTML (Jinja2 template)
+├── static/
+│   └── style.css         # CSS styling
+└── notes.txt      # Dependencies
+
+🎬 Movie Recommendation System - Project Notes
+
+===========================================
+1️⃣ Why Flask?
+-------------------------------------------
+- Flask is a lightweight Python web framework.
+- It lets us build a web server quickly.
+- We use Flask to:
+  * Create routes (like "/")
+  * Handle form submissions
+  * Render HTML templates with Jinja2
+- ✅ Flask connects backend logic with frontend UI.
+
+📌 Example:
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello World!"
+
+2️⃣ Why Pickle?
+-------------------------------------------
+- Pickle saves Python objects (DataFrames, similarity matrices).
+- Instead of re-processing CSVs every time, we load `.pkl` files instantly.
+- movies.pkl → processed movie dataset (titles, IDs, tags).
+- similarity.pkl → cosine similarity matrix.
+
+📌 Example:
+import pickle
+movies = pickle.load(open("models/movies.pkl", "rb"))
+similarity = pickle.load(open("models/similarity.pkl", "rb"))
+
+3️⃣ Why API (TMDB)?
+-------------------------------------------
+- Our dataset only has text info.
+- TMDB API provides:
+  * Posters → for visual appeal
+  * Trailers → for interactive buttons
+- We use movie_id from movies.pkl to fetch data.
+
+📌 Example:
+import requests
+url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=API_KEY"
+data = requests.get(url).json()
+poster_path = data['poster_path']
+
+4️⃣ Techniques Used
+-------------------------------------------
+- Data Preprocessing:
+  * Merge movies + credits datasets
+  * Create "tags" column (overview + genres + keywords + cast)
+
+- Feature Extraction:
+  * CountVectorizer → convert text into numerical vectors
+
+- Similarity Calculation:
+  * Cosine similarity → measure closeness between movies
+
+- Recommendation:
+  * Find index of input movie
+  * Sort similarity scores
+  * Pick top 5 similar movies
+
+- Web Integration:
+  * Flask routes handle input/output
+  * Jinja2 templates render results dynamically
+
+- Styling:
+  * CSS for layout, cards, buttons, hover effects
+
+5️⃣ Project Workflow
+-------------------------------------------
+👩‍💻 User enters a movie name
+⬇️
+⚙️ Flask calls recommend()
+⬇️
+📊 recommend() finds similar movies using similarity.pkl
+⬇️
+🎥 TMDB API fetches poster + trailer
+⬇️
+🖼️ Results passed to index.html
+⬇️
+🎨 HTML + CSS display movie cards with poster, title, and trailer button
+
+6️⃣ Dependencies
+-------------------------------------------
+- flask → web framework
+- requests → API calls
+- pandas → data handling
+- numpy → numerical operations
+- scikit-learn → vectorization + similarity
